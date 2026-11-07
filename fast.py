@@ -10,7 +10,7 @@ r = redis.from_url(
     os.environ["REDIS_URL"],
     decode_responses=True
 )
-r.set('my_key', 'Hello from Redis! WElome to my world friend!')
+r.set('my_key', 'Hello from Redis! WElome to my world friend!First time I am using Redis with FastAPI')
 app = FastAPI(title='my APP', description='This is my first FastAPI app', version='1.0.0')
 app.add_middleware(
     CORSMiddleware,
