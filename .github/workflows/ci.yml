@@ -52,8 +52,8 @@ jobs:
         run: ruff check fast.py tests/
 
       - name: Run tests
-        run: pytest -v
-
+        run: python -m pytest -v 
+        
       - name: Build Docker image
         if: hashFiles('Dockerfile') != ''
         run: docker build -t fastapi-redis-app:test .
