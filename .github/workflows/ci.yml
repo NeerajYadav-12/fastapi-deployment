@@ -1,0 +1,59 @@
+
+name: FastAPI CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test FastAPI and Redis
+    runs-on: ubuntu-latest
+
+    env:
+      REDIS_URL: redis://localhost:6379/0
+      MY_NAME: Neeraj
+
+    services:
+      redis:
+        image: redis:8
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest httpx ruff
+
+      - name: Run linting
+        run: ruff check fast.py tests/
+
+      - name: Run tests
+        run: pytest -v
+
+      - name: Build Docker image
+        if: hashFiles('Dockerfile') != ''
+        run: docker build -t fastapi-redis-app:test .
